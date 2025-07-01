@@ -10,7 +10,7 @@ class DnDApp(Tk):
         self.title("D&D Creator")
         self.geometry("800x700")
         self.configure(bg="#121212")
-        self.iconbitmap("D:\Programming\Projects\DD_Char_Creator\icon.ico")
+        self.iconbitmap("D:\Programming\Projects\DD_Char_Creator\items\icon.ico")
         self.resizable(False,False)
         self.container = Frame(self, bg="#121212")
         self.container.pack(fill="both", expand=True,)
@@ -65,7 +65,7 @@ class MainMenu(Frame):
             command=lambda: controller.show_frame(CharacterCreation)
         ).place(relx=0.01,rely=0.2)
 
-        self.settings_img = ImageTk.PhotoImage(file="D:\Programming\Projects\DD_Char_Creator\settings.png")
+        self.settings_img = ImageTk.PhotoImage(file="D:\Programming\Projects\DD_Char_Creator\items\settings.png")
         settings_btn = ttk.Button(
             self,
             image=self.settings_img,
