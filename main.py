@@ -1,7 +1,12 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import font
-from PIL import ImageTk
+from PIL import Image, ImageTk
+from tkinter.colorchooser import askcolor
+from supp_file import Classes,ClassDescriptions, Class_images
+
+HairColor = "#000000"
+selected_class = ""
 
 class DnDApp(Tk):
     def __init__ (self):
@@ -44,8 +49,6 @@ class MainMenu(Frame):
     def __init__(self, parent, controller):
         super().__init__(parent, bg="#121212")
         
-        
-        
         Label(self, text = "D&D Character Creator",
               font = ("Arial",20,"bold"),
               bg="#121212",
@@ -77,6 +80,8 @@ class MainMenu(Frame):
         
 
 class CharacterCreation(Frame):
+    global HairColor
+    global selected_class
     def __init__(self, parent, controller):
         super().__init__(parent, bg="#121212")
         Label(self, text = "Character Creation",
@@ -90,12 +95,96 @@ class CharacterCreation(Frame):
         text="Back to Main Menu",
         command=lambda: controller.show_frame(MainMenu),
         style="DnD.TButton"
-        ).pack(pady=30)
+        ).place(relx=0.65,rely=0.9)
+
+        ttk.Button(
+            self,
+            text="Выберите класс",
+            command= self.choose_class
+        ).place(relx=0.01,rely=0.1)
+
+        ttk.Button(
+            self,
+            text="Выберите цвет волос",
+            command= self.choose_color
+        ).place(relx=0.01,rely=0.2)
+
+
+    def choose_class(self):
+        global selected_class
+        db_window = Toplevel(self)
+        db_window.title("Class selection")
+        db_window.geometry("1000x700")
+        db_window.configure(bg="#252525")
+
+        control_frame = Frame(db_window, bg="#252525")
+        control_frame.pack(fill=X, padx=10, pady=10)
+        
+        Label(control_frame, 
+              text="Выберите класс персонажа:", 
+              bg="#252525", 
+              fg="white").pack(side=LEFT, padx=5)
+        
+        ClassesMenu = ttk.Combobox(control_frame, values=Classes, state="readonly")
+        ClassesMenu.pack(side=LEFT, padx=5)
+        ClassesMenu.set("Выберите класс...")
+        
+        text_frame = Frame(db_window, bg="#252525")
+        text_frame.pack(fill=BOTH, expand=True, padx=10, pady=(0,10))
+        
+        text_scroll = Scrollbar(text_frame)
+        text_scroll.pack(side=RIGHT, fill=Y)
+        
+        text_output = Text(
+            text_frame,
+            bg="#1e1e1e",
+            fg="white",
+            font=("Consolas", 12),
+            wrap=WORD,
+            width=80,
+            height=30,
+            yscrollcommand=text_scroll.set,
+            padx=10,
+            pady=10
+        )
+        text_output.pack(fill=BOTH, expand=True)
+        text_scroll.config(command=text_output.yview)
+
+        def on_class_selected(event):
+            global selected_class
+            selected_class = ClassesMenu.get()
+            text_output.delete(1.0, END)  
+            
+            if selected_class in ClassDescriptions:
+                
+                text_output.insert(END, ClassDescriptions[selected_class])
+                if selected_class in Class_images:
+                    try:
+                        img_path = Class_images[selected_class]
+                        pil_img = Image.open(img_path)
+                        pil_img.thumbnail((300, 300))
+                
+                        self.class_img = ImageTk.PhotoImage(pil_img)
+        
+                        text_output.image_create(END, image=self.class_img, padx=10, pady=10)
+                    except Exception as e:
+                        print(f"Ошибка загрузки изображения: {e}")
+
+                text_output.tag_configure("quote", foreground="#a0a0a0", font=("Consolas", 10, "italic"))
+                text_output.tag_add("quote", "end-3l", "end")
+                text_output.see(END)
+        
+        ClassesMenu.bind("<<ComboboxSelected>>", on_class_selected)
+    def choose_color(self):
+        color = askcolor(title="Выберите цвет")  # Возвращает кортеж ((R, G, B), "#rrggbb")
+        if color[1]:  # Если цвет выбран (не None)
+            HairColor = color[0]
+            print("Выбранный цвет (RGB):", color[0])
+            print("HEX-код:", color[1])
 
 class Settings(Frame):
     def __init__(self, parent, controller):
         super().__init__(parent, bg="#121212")
-
         Label(self, text = "Settings",
               font = ("Arial",20,"bold"),
               bg="#121212",
@@ -111,3 +200,4 @@ class Settings(Frame):
 if __name__ == "__main__":
     app = DnDApp()
     app.mainloop()
+   
