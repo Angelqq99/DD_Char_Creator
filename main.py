@@ -118,7 +118,7 @@ class CharacterCreation(Frame):
         ttk.Button(
             self,
             text="Редактировать внешность",
-            command= self.appearence
+            command= self.appearance
         ).place(relx=0.8,rely=0.1)
 
 
@@ -253,7 +253,7 @@ class CharacterCreation(Frame):
                 text_output.see(END)
         
         ClassesMenu.bind("<<ComboboxSelected>>", on_class_selected)
-    def appearence(self):
+    def appearance(self):
         db_window = Toplevel(self)
         db_window.title("Class selection")
         db_window.geometry("1000x700")
